@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="mb-3">
+    <a href="{{ url_for('dashboard') }}"
+       class="btn btn-outline-secondary shadow-sm"
+       style="position:absolute; top:20px; left:20px; z-index:1000; background-color: rgba(255,255,255,0.6);">
+        ⬅ Back to Dashboard
+    </a>
+</div>
+
+<div class="glass-card mt-5">
+    <h2 class="text-center mb-4">Track Transactions</h2>
+
+    <!-- Filter Form -->
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-3">
+            <input type="text" name="purpose" placeholder="Purpose" class="form-control" value="{{ request.args.get('purpose', '') }}">
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="location" placeholder="Location" class="form-control" value="{{ request.args.get('location', '') }}">
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="min_amount" placeholder="Min Amount" class="form-control" value="{{ request.args.get('min_amount', '') }}">
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="max_amount" placeholder="Max Amount" class="form-control" value="{{ request.args.get('max_amount', '') }}">
+        </div>
+        <div class="col-md-2">
+            <input type="date" name="date" class="form-control" value="{{ request.args.get('date', '') }}">
+        </div>
+        <div class="col-md-12 mt-2">
+            <button type="submit" class="btn btn-custom w-100">Apply Filters</button>
+            <div class="text-center mt-3">
+                 <a href="/track" class="btn btn-custom btn-sm shadow">
+                   Clear
+                 </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Stats Section -->
+<div class="row text-center mb-4">
+    <div class="col-md-4">
+        <div class="glass-card">
+            <h5>Total Spent</h5>
+            <h3 class="text-warning">₹ {{ total }}</h3>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card">
+            <h5>Average Spend</h5>
+            <h3 class="text-bright-green">₹ {{ avg }}</h3>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card">
+            <h5>Total Transactions</h5>
+            <h3 class="text-info">{{ count }}</h3>
+        </div>
+    </div>
+</div>
+
+<!-- Transactions Table -->
+<div class="glass-card">
+    <h4 class="text-center mb-3">Transactions List</h4>
+    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+        <table id="transactionsTable" class="table table-hover table-bordered align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Purpose</th>
+                    <th>Location</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in transactions %}
+                <tr>
+                    <td>{{ t.Date }}</td>
+                    <td>₹ {{ t.Amount }}</td>
+                    <td>{{ t.Purpose }}</td>
+                    <td>{{ t.Location }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Chart -->
+<div class="glass-card text-center mt-4">
+    <h4 class="mb-3">Spending Trend</h4>
+    <canvas id="spendingChart" height="120"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('spendingChart');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ chart_labels|tojson }},
+            datasets: [{
+                label: 'Amount Spent',
+                data: {{ chart_data|tojson }},
+                borderColor: '#4a00e0',
+                backgroundColor: 'rgba(74,0,224,0.2)',
+                pointBackgroundColor: '#4a00e0',
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { labels: { color: '#333' } } },
+            scales: {
+                x: { ticks: { color: '#495057' }, grid: { color: "#dee2e6" } },
+                y: { ticks: { color: '#495057' }, grid: { color: "#dee2e6" } }
+            }
+        }
+    });
+</script>
+{% endblock %}

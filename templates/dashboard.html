@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="glass-card text-center p-5">
+
+            <!-- Welcome heading -->
+            <h1 class="mb-3" style="font-size: 2.5rem; font-weight: 700;">
+                Welcome, <span class="text-primary">{{ session['user'] }}</span>
+            </h1>
+            <p class="mb-4 text-muted" style="font-size: 1.1rem;">Manage your expenses easily</p>
+
+            <!-- Buttons -->
+            <div class="d-grid gap-3 col-md-8 mx-auto">
+
+                <a href="/add" class="btn btn-custom btn-lg shadow">Add Transaction</a>
+                <a href="/track" class="btn btn-custom btn-lg shadow">Track Transactions</a>
+                <a href="/logout" class="btn btn-outline-secondary btn-lg shadow-sm">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
