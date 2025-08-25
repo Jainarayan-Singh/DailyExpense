@@ -3,13 +3,18 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import re
 
-app = Flask(__name__)
-app.secret_key = "secret123"  # session ke liye
+import os
 
-# --------- PostgreSQL Config ---------
-# Render will give you connection string like:
-# postgresql://username:password@hostname:port/dbname
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://username:password@hostname:port/dbname'
+app = Flask(__name__)
+app.secret_key = os.environ.get("SECRET_KEY", "secret123")  # session ke liye
+
+
+# Get DATABASE_URL from env variable
+db_url = os.environ.get("DATABASE_URL")
+if not db_url:
+    raise RuntimeError("DATABASE_URL environment variable not set!")
+
+app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
